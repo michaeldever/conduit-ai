@@ -34,9 +34,12 @@ export class Article {
   @Property()
   body = '';
 
-  @Property({ type: 'datetime', onUpdate(entity: Article) {
-      return entity.createdAt.toString().replace('T', ' ').replace('Z','')
-  }, })
+  @Property({
+    type: 'datetime',
+    onUpdate(entity: Article) {
+      return new Date(entity.createdAt).toISOString().replace('T', ' ').replace('Z', '');
+    },
+  })
   createdAt = new Date();
 
   @Property({ type: 'date', onUpdate: () => new Date() })

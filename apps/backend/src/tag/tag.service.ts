@@ -10,7 +10,6 @@ export class TagService {
   constructor(@InjectRepository(Article) private articleRepository: EntityRepository<Article>) {}
 
   async findAll() {
-
     const articles = await this.articleRepository.findAll();
 
     const tags = articles.reduce((acc: string[], article: Article) => {
@@ -18,7 +17,7 @@ export class TagService {
     }, [] as string[]);
 
     return {
-      tags: [...new Set(tags)]
-    }
+      tags: [...new Set(tags)],
+    };
   }
 }

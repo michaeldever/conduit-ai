@@ -156,40 +156,39 @@ export class ArticleService {
     const article = new Article(user!, dto.title, dto.description, dto.body);
 
     // Parse tags
-    const tagNames = dto.tagList.split(',');  
+    const tagNames = dto.tagList.split(',');
     article.tagList.push(...tagNames.map((name: string) => name.trim()));
-    
+
     // Remove duplicates
-    article.tagList = [...new Set(article.tagList)];  
-    
+    article.tagList = [...new Set(article.tagList)];
+
     user?.articles.add(article);
     await this.em.flush();
 
-  user?.articles.add(article);  
-  await this.em.flush();
+    user?.articles.add(article);
+    await this.em.flush();
 
     return { article: article.toJSON(user!) };
   }
 
   async update(userId: number, slug: string, articleData: CreateArticleDto): Promise<IArticleRO> {
+    const user = await this.userRepository.findOne(
+      { id: userId },
+      { populate: ['followers', 'favorites', 'articles'] },
+    );
 
-  const user = await this.userRepository.findOne(
-    { id: userId }, 
-    { populate: ['followers', 'favorites', 'articles'] } 
-  );
-  
-  const article = await this.articleRepository.findOne({ slug }, { populate: ['author'] });
+    const article = await this.articleRepository.findOne({ slug }, { populate: ['author'] });
 
-  const tagList = articleData.tagList.split(',');
-  wrap(article).assign({
-    ...articleData,
-    tagList
-  });
+    const tagList = articleData.tagList.split(',');
+    wrap(article).assign({
+      ...articleData,
+      tagList,
+    });
 
-  await this.em.flush();
+    await this.em.flush();
 
-  return { article: article!.toJSON(user!) };
-}
+    return { article: article!.toJSON(user!) };
+  }
 
   async delete(slug: string) {
     return this.articleRepository.nativeDelete({ slug });
