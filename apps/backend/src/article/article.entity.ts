@@ -1,10 +1,12 @@
 import {
   ArrayType,
   Collection,
+  DateTimeType,
   Entity,
   EntityDTO,
   ManyToOne,
   OneToMany,
+  Platform,
   PrimaryKey,
   Property,
   wrap,
@@ -13,6 +15,7 @@ import slug from 'slug';
 
 import { User } from '../user/user.entity';
 import { Comment } from './comment.entity';
+import { MySqlPlatform } from '@mikro-orm/mysql';
 
 @Entity()
 export class Article {
@@ -31,7 +34,9 @@ export class Article {
   @Property()
   body = '';
 
-  @Property({ type: 'date' })
+  @Property({ type: 'datetime', onUpdate(entity: Article) {
+      return entity.createdAt.toString().replace('T', ' ').replace('Z','')
+  }, })
   createdAt = new Date();
 
   @Property({ type: 'date', onUpdate: () => new Date() })
